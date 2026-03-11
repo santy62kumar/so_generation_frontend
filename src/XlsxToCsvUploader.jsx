@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import AuthHeader from './AuthHeader';
 
 
 export default function XLSXConverter() {
@@ -176,26 +177,23 @@ this is the list of color you use: #3A1A1A, # 6B4B41, # 9B7C73, #4F372F, #6B4B41
         justifyContent: 'center',
         padding: '32px'
       }}>
+      
         <div style={{ width: '100%', maxWidth: '672px' }}>
+        {/* <AuthHeader style={{ textAlign: 'center', marginBottom: '48px' }}/> */}
           {/* Header with decorative elements */}
-          <div style={{ textAlign: 'center', marginBottom: '48px' }} className="floating">
-            
+          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <div style={{ transform: 'scale(0.8)', transformOrigin: 'top center' }}>
+              <AuthHeader />
+            </div>
             <h1 className="title" style={{
-              fontSize: '48px',
-              fontWeight: 700,
-              color: '#3A1A1A',
-              marginBottom: '12px',
-              letterSpacing: '-0.5px'
-            }}>
-              Modula SO Generator
-            </h1>
-            {/* <p style={{
-              color: '#4b5563',
-              fontSize: '18px',
-              fontWeight: 500
-            }}>
-              Transform spreadsheets to CSV with elegance
-            </p> */}
+                fontSize: '36px',
+                fontWeight: 700,
+                color: '#3A1A1A',
+                marginBottom: '12px',
+                letterSpacing: '-0.5px'
+              }}>
+                Modula SO Generator
+              </h1>
           </div>
 
           {/* Main Card */}
