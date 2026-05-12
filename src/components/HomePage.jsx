@@ -72,7 +72,7 @@ export default function HomePage({ onNavigate }) {
           fontSize: 42, fontWeight: 700, color: COLORS.darkBrown,
           letterSpacing: "-0.5px", lineHeight: 1.2, margin: "0 0 16px",
         }}>
-          Modula Generator
+          Modula Generators
         </h1>
         <p style={{ fontSize: 16, color: COLORS.deepTaupe, lineHeight: 1.7, margin: 0 }}>
           Select a tool to get started.
