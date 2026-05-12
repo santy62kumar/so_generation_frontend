@@ -26,11 +26,13 @@ import Navbar         from "./components/Navbar";
 import HomePage       from "./components/HomePage";
 import KitchenPDFForm from "./components/KitchenForm";
 import XLSXConverter  from "./components/XlsxToCsvUploader";
+import WarrantyForm   from "./components/WarrantyForm";   // ← new
 
 const VIEWS = {
   home:    HomePage,
   kitchen: KitchenPDFForm,
   xlsx:    XLSXConverter,
+  warranty: WarrantyForm,
 };
 
 export default function App() {
