@@ -64,7 +64,7 @@ import WarrantyForm            from "./components/WarrantyForm";
 import InstallationReportForm  from "./components/InstallationReportForm"; // ← NEW
 
 // Add your existing XlsxUploader import here too
-// import XlsxUploader from "./components/XlsxUploader";
+import XlsxUploader from "./components/XlsxToCsvUploader";
 
 export default function App() {
   const [view, setView] = useState("home");
@@ -77,7 +77,7 @@ export default function App() {
       {view === "kitchen"      && <KitchenForm />}
       {view === "warranty"     && <WarrantyForm />}
       {view === "installation" && <InstallationReportForm />}   {/* ← NEW */}
-      {/* {view === "xlsx" && <XlsxUploader />} */}
+      {view === "xlsx" && <XlsxUploader />}
     </>
   );
 }
