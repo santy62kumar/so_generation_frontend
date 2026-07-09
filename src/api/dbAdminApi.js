@@ -3,7 +3,7 @@
 // Thin fetch wrapper for the Database Manager UI.
 // Adjust API_BASE to match however the rest of the app points at your backend.
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 const TOKEN_KEY = "modula_admin_token";
 
