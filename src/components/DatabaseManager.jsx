@@ -19,8 +19,8 @@ const TABLE_CONFIGS = {
     searchField: "cabinet_code",
     searchLabel: "Cabinet Code",
     columns: [
-      { key: "cabinet_code", label: "Cabinet Code" },
-      { key: "description", label: "Description" },
+      { key: "cabinet_code", label: "Cabinet Code", required: true },
+      { key: "description", label: "Description", required: true },
       { key: "bom_line_1", label: "BOM 1" },
       { key: "bom_line_2", label: "BOM 2" },
       { key: "bom_line_3", label: "BOM 3" },
@@ -210,12 +210,32 @@ function EditModal({ table, config, row, onClose, onSaved }) {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
 
-  const handleChange = (key, val) => setValues((v) => ({ ...v, [key]: val }));
+  const handleChange = (key, val) => {
+    setValues((v) => ({ ...v, [key]: val }));
+    if (fieldErrors[key]) setFieldErrors((f) => ({ ...f, [key]: undefined }));
+  };
+
+  const validate = () => {
+    const errors = {};
+    config.columns.forEach((c) => {
+      if (c.required && !String(values[c.key] ?? "").trim()) {
+        errors[c.key] = `${c.label} is required`;
+      }
+    });
+    if (isNew && config.pk !== "id" && !String(values[config.pk] ?? "").trim()) {
+      errors[config.pk] = `${config.pk} is required`;
+    }
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSave = async () => {
-    setSaving(true);
     setError("");
+    if (!validate()) return;
+
+    setSaving(true);
     try {
       if (isNew) {
         await createRow(table, values);
@@ -265,14 +285,19 @@ function EditModal({ table, config, row, onClose, onSaved }) {
         {isNew && config.pk !== "id" && (
           <div style={{ marginBottom: 14 }}>
             <label style={{ fontSize: 13, fontWeight: 600, color: COLORS.darkBrown, display: "block", marginBottom: 6 }}>
-              {config.pk} (primary key)
+              {config.pk} (primary key) <span style={{ color: "#b3413a" }}>*</span>
             </label>
             <input
-              style={inputStyle}
+              style={{
+                ...inputStyle,
+                ...(fieldErrors[config.pk] ? { borderColor: "#b3413a" } : {}),
+              }}
               value={values[config.pk]}
               onChange={(e) => handleChange(config.pk, e.target.value)}
-              required
             />
+            {fieldErrors[config.pk] && (
+              <p style={{ color: "#b3413a", fontSize: 12, margin: "4px 0 0" }}>{fieldErrors[config.pk]}</p>
+            )}
           </div>
         )}
 
@@ -281,14 +306,20 @@ function EditModal({ table, config, row, onClose, onSaved }) {
           .map((c) => (
             <div key={c.key} style={{ marginBottom: 14 }}>
               <label style={{ fontSize: 13, fontWeight: 600, color: COLORS.darkBrown, display: "block", marginBottom: 6 }}>
-                {c.label}
+                {c.label} {c.required && <span style={{ color: "#b3413a" }}>*</span>}
               </label>
               <input
-                style={inputStyle}
+                style={{
+                  ...inputStyle,
+                  ...(fieldErrors[c.key] ? { borderColor: "#b3413a" } : {}),
+                }}
                 value={values[c.key] ?? ""}
                 onChange={(e) => handleChange(c.key, e.target.value)}
                 disabled={!isNew && c.key === config.pk}
               />
+              {fieldErrors[c.key] && (
+                <p style={{ color: "#b3413a", fontSize: 12, margin: "4px 0 0" }}>{fieldErrors[c.key]}</p>
+              )}
             </div>
           ))}
 
