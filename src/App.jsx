@@ -62,6 +62,7 @@ import HomePage                from "./components/HomePage";
 import KitchenForm             from "./components/KitchenForm";
 import WarrantyForm            from "./components/WarrantyForm";
 import InstallationReportForm  from "./components/InstallationReportForm"; // ← NEW
+import DatabaseManager from "./components/DatabaseManager";
 
 // Add your existing XlsxUploader import here too
 import XlsxUploader from "./components/XlsxToCsvUploader";
@@ -78,6 +79,7 @@ export default function App() {
       {view === "warranty"     && <WarrantyForm />}
       {view === "installation" && <InstallationReportForm />}   {/* ← NEW */}
       {view === "xlsx" && <XlsxUploader />}
+      {view === "database" && <DatabaseManager />}
     </>
   );
 }

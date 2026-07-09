@@ -83,11 +83,19 @@
 
 import React from "react";
 
+// const TABS = [
+//   { key: "kitchen",      label: "Design Draft"          },
+//   { key: "xlsx",         label: "SO Generator"          },
+//   { key: "warranty",     label: "Warranty Card"         },
+//   { key: "installation", label: "Installation Report"   },  // ← NEW
+// ];
+
 const TABS = [
-  { key: "kitchen",      label: "Design Draft"          },
-  { key: "xlsx",         label: "SO Generator"          },
-  { key: "warranty",     label: "Warranty Card"         },
-  { key: "installation", label: "Installation Report"   },  // ← NEW
+  { key: "kitchen",      label: "Design Draft"        },
+  { key: "xlsx",         label: "SO Generator"        },
+  { key: "warranty",     label: "Warranty Card"       },
+  { key: "installation", label: "Installation Report" },
+  { key: "database",     label: "Database Manager"    },  // ← NEW
 ];
 
 const Navbar = ({ activeView, onNavigate }) => (
