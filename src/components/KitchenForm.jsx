@@ -183,9 +183,8 @@ const INITIAL_FIELDS = {
   renderImage1: null,
   renderImage2: null,
   renderImage3: null,
-  // 5th field in the render section — optional reference photo the color
-  // finishes are called out from, plus up to 8 optional finish selections
-  // (2-8 required only if the reference image is uploaded).
+  // Mandatory Kitchen Finish reference image, plus 2-8 finish selections.
+  // At least one of the four render images is also mandatory.
   kitchenFinishImage: null,
   kitchenFinishColors: {
     lowerCabinet: '',
@@ -354,18 +353,34 @@ export default function KitchenPDFForm() {
       return;
     }
 
-    // ── Kitchen Finish is entirely optional. But if a reference image WAS
-    // uploaded, between 2 and 8 of the 8 color categories must be picked
-    // (any subset — none are individually required). ──
-    if (fields.kitchenFinishImage) {
-      if (selectedFinishCount < MIN_FINISH_COLORS) {
-        setError(`Select at least ${MIN_FINISH_COLORS} kitchen finish colors, or remove the reference image.`);
-        return;
-      }
-      if (selectedFinishCount > MAX_FINISH_COLORS) {
-        setError(`You can select at most ${MAX_FINISH_COLORS} kitchen finish colors.`);
-        return;
-      }
+    // Kitchen Finish image is mandatory.
+    if (!fields.kitchenFinishImage) {
+      setError('Kitchen Finish image is required.');
+      return;
+    }
+
+    // At least 2 finish colours must be selected for the mandatory finish page.
+    if (selectedFinishCount < MIN_FINISH_COLORS) {
+      setError(`Select at least ${MIN_FINISH_COLORS} kitchen finish colors.`);
+      return;
+    }
+
+    if (selectedFinishCount > MAX_FINISH_COLORS) {
+      setError(`You can select at most ${MAX_FINISH_COLORS} kitchen finish colors.`);
+      return;
+    }
+
+    // At least one out of the four render uploads is mandatory.
+    const hasAtLeastOneRender = [
+      fields.renderImage0,
+      fields.renderImage1,
+      fields.renderImage2,
+      fields.renderImage3,
+    ].some(Boolean);
+
+    if (!hasAtLeastOneRender) {
+      setError('Upload at least 1 render image.');
+      return;
     }
 
     setError('');
@@ -384,8 +399,7 @@ export default function KitchenPDFForm() {
       ['renderImage0', 'renderImage1', 'renderImage2', 'renderImage3']
         .forEach(k => { if (fields[k]) fd.append(k, fields[k]); });
 
-      // Kitchen Finish — entirely optional. Only sent when a reference
-      // image was uploaded; only the categories the user actually picked
+      // Kitchen Finish is mandatory. Only the categories the user picked
       // a color for are included (2-8 of the 8 possible keys), alongside
       // their display names so the PDF can print "<Category>" / "<Finish
       // name>" under each swatch without a backend catalog lookup.
@@ -478,9 +492,7 @@ export default function KitchenPDFForm() {
 
       {/* Renders — Kitchen Finish first, followed by 4 render uploads */}
       <Section title="Renders">
-        {/* ── Kitchen Finish — entirely optional. Uploading the reference
-            image unlocks color selection (2-8 of the 8 categories,
-            any subset). This block is intentionally shown before renders. ── */}
+        {/* Kitchen Finish is mandatory and shown before render uploads. */}
         <div style={{
           marginBottom: 24, paddingBottom: 20,
           borderBottom: `1px dashed ${COLORS.lightTaupe}`,
@@ -489,7 +501,7 @@ export default function KitchenPDFForm() {
             margin: '0 0 4px', fontWeight: 700, color: COLORS.deepTaupe,
             fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.4px',
           }}>
-            Kitchen Finish
+            Kitchen Finish *
           </p>
           {/* <p style={{ margin: '0 0 14px', fontSize: 12.5, color: COLORS.mutedBrown }}>
             Upload a reference image to add a "Kitchen Color Finishes Used" slide.
@@ -534,7 +546,7 @@ export default function KitchenPDFForm() {
           margin: '0 0 14px', fontWeight: 700, color: COLORS.deepTaupe,
           fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.4px',
         }}>
-          Upload Renders (up to 4)
+          Upload Renders * (at least 1, up to 4)
         </p>
 
         {[0, 1, 2, 3].map(i => (
