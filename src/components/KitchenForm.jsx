@@ -442,12 +442,7 @@ export default function KitchenPDFForm() {
 
       {/* Layout Plan */}
       <Section title="Layout Plan">
-        <p style={{
-          margin: '0 0 10px', fontWeight: 700, color: COLORS.deepTaupe,
-          fontSize: 12.5, textTransform: 'uppercase', letterSpacing: '0.4px',
-        }}>
-          layout images Count?
-        </p>
+        
         <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
           <RadioCard
             label="1 Image (Full Width)"
@@ -539,7 +534,7 @@ export default function KitchenPDFForm() {
           margin: '0 0 14px', fontWeight: 700, color: COLORS.deepTaupe,
           fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.4px',
         }}>
-          Upload Renders
+          Upload Renders (up to 4)
         </p>
 
         {[0, 1, 2, 3].map(i => (
