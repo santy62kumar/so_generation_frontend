@@ -1,5 +1,5 @@
 export const CITIES = [
   "Mumbai", "Pune", "Bangalore", "Delhi", "Kochi",
-  "Chennai", "Rohtak", "Mohali", "Mysore", "Jaipur",
-  "Hyderabad", "Raipur", "Tirupati", "Lucknow", "Nanded",
+  "Chennai", "Rohtak", "Mohali", "Mysore",
+  "Hyderabad", "Tirupati", "Lucknow", "Nanded", "Namakkal",
 ];

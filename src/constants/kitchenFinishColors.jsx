@@ -94,7 +94,7 @@ export const GLASS_COLORS = [
 
 ];
 
-export const GOLA_COLORS = [
+export const Handle_Profile = [
   // TODO — no real Gola color reference images supplied yet. Temporarily
   // reusing the cabinet swatches as placeholders, same as skirting/open-shelf
   // below. Replace with real Gola catalog entries, same shape:
@@ -182,12 +182,20 @@ export const KITCHEN_FINISH_FIELDS = [
     shortLabel: 'Glass Color',
     groups: [{ label: 'Glass Colors', options: withCategory('glass', GLASS_COLORS) }],
   },
+  // {
+  //   key: 'golaColor',
+  //   label: 'Gola Color',
+  //   shortLabel: 'Gola Color',
+  //   groups: [{ label: 'Gola Colors', options: withCategory('gola', GOLA_COLORS) }],
+  // },
+
   {
-    key: 'golaColor',
-    label: 'Gola Color',
-    shortLabel: 'Gola Color',
-    groups: [{ label: 'Gola Colors', options: withCategory('gola', GOLA_COLORS) }],
+    key: 'handleProfile',
+    label: 'Handle Profile',
+    shortLabel: 'Handle Profile',
+    groups: [{ label: 'Handle Profiles', options: withCategory('gola', Handle_Profile) }],
   },
+  
   {
     key: 'skirtingColor',
     label: 'Skirting Color',

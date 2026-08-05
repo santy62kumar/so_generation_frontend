@@ -195,6 +195,7 @@ const INITIAL_FIELDS = {
     skirtingColor: '',
     openShelf: '',
     tallTower: '',
+    handleProfile: '',
   },
   relationName: '',
   relationPhone: '',
