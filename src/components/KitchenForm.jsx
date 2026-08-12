@@ -10,7 +10,7 @@ import { downloadFile } from "../utils/downloadFile";
 import { COLORS, PRIMARY_BTN_STYLE } from "../constants/theme";
 import { CITIES } from "../constants/cities";
 import { KITCHEN_FINISH_FIELDS } from "../constants/kitchenFinishColors";
-import data from "./Data";
+// import data from "./Data";
 
 // Place the two background assets you sent (6.jpg / 7.jpg) here, or update
 // these two import paths to wherever they actually live in the project.
@@ -30,6 +30,7 @@ import finishSlideBg5 from "../assets/slide-backgrounds/Finishes_image_5.jpg";
 import finishSlideBg6 from "../assets/slide-backgrounds/Finishes_image_6.jpg";
 import finishSlideBg7 from "../assets/slide-backgrounds/Finishes_image_7.jpg";
 import finishSlideBg8 from "../assets/slide-backgrounds/Finishes_image_8.jpg";
+import { design_data, sales_data } from "./Data";
 
 const FINISH_SLIDE_BG_BY_COUNT = {
   2: finishSlideBg2, 3: finishSlideBg3, 4: finishSlideBg4, 5: finishSlideBg5,
@@ -88,9 +89,14 @@ function RadioCard({ label, checked, onClick }) {
 
 // ─── ContactPanel ────────────────────────────────────────────────
 // Renders the name-select + phone + email block for one person role.
-function ContactPanel({ role, nameValue, phoneValue, emailValue, phoneName, emailName, onSelect, onChange }) {
+
+// ─── ContactPanel ────────────────────────────────────────────────
+// Renders the name-select + phone + email block for one person role.
+// `people` is the list this role draws from: sales_data for the Relations
+// Associate, design_data for the Designated Designer.
+function ContactPanel({ role, people, nameValue, phoneValue, emailValue, phoneName, emailName, onSelect, onChange }) {
   const label = role === 'relation' ? 'Relations Associate' : 'Designated Designer';
-  const emailPlaceholder = role === 'relation' ? 'name@modula.in' : 'designer@modula.in';
+  const emailPlaceholder = role === 'relation' ? 'sales@modula.in' : 'designer@modula.in';
 
   return (
     <div>
@@ -109,7 +115,7 @@ function ContactPanel({ role, nameValue, phoneValue, emailValue, phoneName, emai
         value={nameValue}
         onChange={(_, val) => onSelect(role, val)}
         placeholder="-- Select Name --"
-        options={data.map(p => ({ value: p.name, label: p.name }))}
+        options={people.map(p => ({ value: p.name, label: p.name }))}
       />
 
       <TextField label="Phone" name={phoneName} value={phoneValue} onChange={onChange} placeholder="+91 98765 43210" />
@@ -117,6 +123,35 @@ function ContactPanel({ role, nameValue, phoneValue, emailValue, phoneName, emai
     </div>
   );
 }
+// function ContactPanel({ role, nameValue, phoneValue, emailValue, phoneName, emailName, onSelect, onChange }) {
+//   const label = role === 'relation' ? 'Relations Associate' : 'Designated Designer';
+//   const emailPlaceholder = role === 'relation' ? 'name@modula.in' : 'designer@modula.in';
+
+//   return (
+//     <div>
+//       <p style={{
+//         margin: '0 0 12px', fontWeight: 700,
+//         color: COLORS.deepTaupe, fontSize: 13,
+//         textTransform: 'uppercase', letterSpacing: '0.5px',
+//       }}>
+//         {label}
+//       </p>
+
+//       {/* Name dropdown — auto-fills phone & email */}
+//       <SelectField
+//         label="Name"
+//         name={`${role}Name`}
+//         value={nameValue}
+//         onChange={(_, val) => onSelect(role, val)}
+//         placeholder="-- Select Name --"
+//         options={data.map(p => ({ value: p.name, label: p.name }))}
+//       />
+
+//       <TextField label="Phone" name={phoneName} value={phoneValue} onChange={onChange} placeholder="+91 98765 43210" />
+//       <TextField label="Email" name={emailName} value={emailValue} onChange={onChange} placeholder={emailPlaceholder} />
+//     </div>
+//   );
+// }
 
 // ─── SubmitButton ────────────────────────────────────────────────
 function SubmitButton({ loading, onClick }) {
@@ -257,16 +292,31 @@ export default function KitchenPDFForm() {
   const selectedFinishCount = KITCHEN_FINISH_FIELDS.filter(f => fields.kitchenFinishColors[f.key]).length;
 
   // Auto-fill phone + email when a contact is selected from the dropdown
+
+  // Auto-fill phone + email when a contact is selected from the dropdown.
+  // Relations Associate comes from sales_data, Designer from design_data,
+  // so a name that exists in both lists still resolves to the right row.
   const handleContactSelect = (role, selectedName) => {
-    const person = data.find(p => p.name === selectedName);
+    const source = role === 'relation' ? sales_data : design_data;
+    const person = source.find(p => p.name === selectedName);
     const prefix = role === 'relation' ? 'relation' : 'designer';
     setFields(prev => ({
       ...prev,
       [`${prefix}Name`]:  selectedName,
-      [`${prefix}Phone`]: person?.phone_name ?? '',
-      [`${prefix}Email`]: person?.email_id   ?? '',
+      [`${prefix}Phone`]: (person?.phone_name ?? '').trim(),
+      [`${prefix}Email`]: (person?.email_id   ?? '').trim(),
     }));
   };
+  // const handleContactSelect = (role, selectedName) => {
+  //   const person = data.find(p => p.name === selectedName);
+  //   const prefix = role === 'relation' ? 'relation' : 'designer';
+  //   setFields(prev => ({
+  //     ...prev,
+  //     [`${prefix}Name`]:  selectedName,
+  //     [`${prefix}Phone`]: person?.phone_name ?? '',
+  //     [`${prefix}Email`]: person?.email_id   ?? '',
+  //   }));
+  // };
 
   // Opens the crop panel for a raw file instead of storing it directly.
   // `applyFn` is called with the final cropped File once the user confirms.
@@ -564,7 +614,7 @@ export default function KitchenPDFForm() {
       {/* Contact Details */}
       <Section title="Contact Details">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-          <ContactPanel
+          {/* <ContactPanel
             role="relation"
             nameValue={fields.relationName}
             phoneValue={fields.relationPhone}
@@ -576,6 +626,29 @@ export default function KitchenPDFForm() {
           />
           <ContactPanel
             role="designer"
+            nameValue={fields.designerName}
+            phoneValue={fields.designerPhone}
+            emailValue={fields.designerEmail}
+            phoneName="designerPhone"
+            emailName="designerEmail"
+            onSelect={handleContactSelect}
+            onChange={set}
+          /> */}
+
+          <ContactPanel
+            role="relation"
+            people={sales_data}
+            nameValue={fields.relationName}
+            phoneValue={fields.relationPhone}
+            emailValue={fields.relationEmail}
+            phoneName="relationPhone"
+            emailName="relationEmail"
+            onSelect={handleContactSelect}
+            onChange={set}
+          />
+          <ContactPanel
+            role="designer"
+            people={design_data}
             nameValue={fields.designerName}
             phoneValue={fields.designerPhone}
             emailValue={fields.designerEmail}

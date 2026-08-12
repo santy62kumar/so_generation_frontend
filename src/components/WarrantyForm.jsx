@@ -4,6 +4,7 @@ import Section     from "./ui/Section";
 import TextField   from "./ui/TextField";
 import { downloadFile } from "../utils/downloadFile";
 import { COLORS, PRIMARY_BTN_STYLE } from "../constants/theme";
+import { design_data, sales_data } from "./Data";
 
 // ─── Icons ───────────────────────────────────────────────────────────────────
 
