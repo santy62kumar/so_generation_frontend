@@ -11,7 +11,7 @@ const design_data = [
 {name: "Dheeraj",  phone_name: "7988112095", email_id: "dheeraj@modula.in" },
 {name: "Supritha",  phone_name: "9663101070", email_id: "design@studiyo360.com" },
 {name: "Keerthana",  phone_name: "9353609929", email_id: "sales@studiyo360.com" },
-{name: "Bhaskar Chauhar",  phone_name: "8573858537", email_id: "bhaskar@studiomaak.in" },
+{name: "Bhaskar Chauhan",  phone_name: "8573858537", email_id: "bhaskar@studiomaak.in" },
 {name: "Chandana Jain",  phone_name: "8971787999", email_id: "vera.jswmodula@gmail.com" },
 {name: "Jiya S Jain",  phone_name: "7483476372", email_id: "jiya.veraenterprises@gmail.com" },
 {name: "Mariya Jeena",  phone_name: "9496014960", email_id: "jeena@vitson.net" },
