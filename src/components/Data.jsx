@@ -16,8 +16,8 @@ const design_data = [
 {name: "Jiya S Jain",  phone_name: "7483476372", email_id: "jiya.veraenterprises@gmail.com" },
 {name: "Mariya Jeena",  phone_name: "9496014960", email_id: "jeena@vitson.net" },
 {name: "Bindhu",  phone_name: "6361696585", email_id: "design@studiyo360.com" },
-{name: "Vicky Sharma",  phone_name: " 9667278947", email_id: "vicky.sharma@ayena.in" }
-
+{name: "Vicky Sharma",  phone_name: " 9667278947", email_id: "vicky.sharma@ayena.in" },
+{name: "Puja Subramanyam",  phone_name: "9709707227", email_id: "puja.wda2025@gmail.com" }
 ];
 
 const sales_data = [
