@@ -1,7 +1,6 @@
-
-
 import React, { useState, useRef, useEffect } from "react";
-import { COLORS, PRIMARY_BTN_STYLE } from "../constants/theme";
+
+import { Button } from "@/components/ui/button";
 
 // Must match the slide canvas size in pdfgenerator.py (SLIDE_W / SLIDE_H).
 const SLIDE_W = 1456;
@@ -204,7 +203,6 @@ export default function ImageCropPanel({ file, backgroundSrc, slot, label, onApp
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("pointercancel", onUp);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dragKind, displayScale]);
 
   // Scroll/pinch to scale proportionally around the box's own center.
@@ -292,16 +290,13 @@ export default function ImageCropPanel({ file, backgroundSrc, slot, label, onApp
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "#faf7f2" }}>
+    <div className="flex h-full flex-col bg-brand-canvas">
       {/* Header */}
-      <div style={{ padding: "28px 40px 20px", borderBottom: `1px solid ${COLORS.lightTaupe}` }}>
-        <p style={{
-          margin: "0 0 6px", fontWeight: 700, fontSize: 13,
-          textTransform: "uppercase", letterSpacing: "0.6px", color: COLORS.deepTaupe,
-        }}>
+      <div className="border-b border-border px-10 pt-7 pb-5">
+        <p className="mb-1.5 text-sm font-bold tracking-[0.6px] text-brand-deep uppercase">
           Position &amp; Crop — {label}
         </p>
-        <p style={{ margin: 0, fontSize: 13, color: COLORS.mutedBrown, lineHeight: 1.5 }}>
+        <p className="text-sm leading-relaxed text-brand-muted">
           Drag inside the box to move it, drag a <strong>corner</strong> to resize both sides while
           keeping the aspect ratio, drag a <strong>side</strong> to crop or stretch just that edge.
           Scroll to scale. Any empty space is filled with the exact same slide background showing
@@ -310,69 +305,54 @@ export default function ImageCropPanel({ file, backgroundSrc, slot, label, onApp
       </div>
 
       {/* Slide preview */}
-      <div style={{
-        flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
-        padding: 32, overflow: "auto", minHeight: 0,
-      }}>
+      <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto p-8">
         <div
           ref={slideRef}
           onWheel={handleWheel}
+          className="relative w-full max-w-[900px] rounded-md bg-brand-dark bg-cover bg-center shadow-[0_20px_40px_-12px_rgba(58,26,26,0.35)]"
           style={{
-            position: "relative",
-            width: "100%",
-            maxWidth: 900,
             aspectRatio: `${SLIDE_W} / ${SLIDE_H}`,
-            borderRadius: 8,
-            boxShadow: "0 20px 40px -12px rgba(58,26,26,0.35)",
             backgroundImage: backgroundSrc ? `url(${backgroundSrc})` : undefined,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundColor: "#3a1a1a",
           }}
         >
           {imgEl ? (
             <>
               {/* Frame — fixed, clips the image visually to the real target slot */}
               <div
+                className="absolute overflow-hidden rounded-sm outline-2 -outline-offset-2 outline-brand-warm"
                 style={{
-                  position: "absolute",
                   left: slotDisp.x, top: slotDisp.y,
                   width: slotDisp.w, height: slotDisp.h,
-                  overflow: "hidden",
-                  borderRadius: 4,
-                  outline: `2px solid ${COLORS.warmTaupe}`,
-                  outlineOffset: -2,
                 }}
               >
                 <div
                   onPointerDown={startMove}
+                  className={dragKind === "move" ? "absolute cursor-grabbing touch-none select-none" : "absolute cursor-grab touch-none select-none"}
                   style={{
-                    position: "absolute",
                     left: dispBox.x - slotDisp.x,
                     top: dispBox.y - slotDisp.y,
                     width: dispBox.w,
                     height: dispBox.h,
                     background: PAD_COLOR,
-                    cursor: dragKind === "move" ? "grabbing" : "grab",
-                    touchAction: "none",
-                    userSelect: "none",
                   }}
                 >
                   <img
                     src={imgEl.src}
+                    alt=""
                     draggable={false}
-                    style={{ width: "100%", height: "100%", pointerEvents: "none", display: "block" }}
+                    className="pointer-events-none block size-full"
                   />
                 </div>
               </div>
 
               {/* Dashed outline of the box's true bounds, even where it extends past the frame */}
-              <div style={{
-                position: "absolute", left: dispBox.x, top: dispBox.y,
-                width: dispBox.w, height: dispBox.h,
-                border: "1.5px dashed #ef4444",
-                pointerEvents: "none",
-              }} />
+              <div
+                className="pointer-events-none absolute border-[1.5px] border-dashed border-danger-soft"
+                style={{
+                  left: dispBox.x, top: dispBox.y,
+                  width: dispBox.w, height: dispBox.h,
+                }}
+              />
 
               {/* Resize handles */}
               {HANDLES.map(({ id, cursor }) => {
@@ -381,28 +361,14 @@ export default function ImageCropPanel({ file, backgroundSrc, slot, label, onApp
                   <div
                     key={id}
                     onPointerDown={startResize(id)}
-                    style={{
-                      position: "absolute",
-                      left: p.x, top: p.y,
-                      width: 14, height: 14,
-                      transform: "translate(-50%, -50%)",
-                      background: "#fff",
-                      border: `2px solid ${COLORS.warmTaupe}`,
-                      borderRadius: 3,
-                      cursor,
-                      touchAction: "none",
-                      boxShadow: "0 1px 4px rgba(0,0,0,0.4)",
-                    }}
+                    className="absolute size-3.5 -translate-x-1/2 -translate-y-1/2 touch-none rounded-[3px] border-2 border-brand-warm bg-white shadow-[0_1px_4px_rgba(0,0,0,0.4)]"
+                    style={{ left: p.x, top: p.y, cursor }}
                   />
                 );
               })}
             </>
           ) : (
-            <div style={{
-              position: "absolute", inset: 0, display: "flex",
-              alignItems: "center", justifyContent: "center",
-              color: "rgba(255,255,255,0.85)", fontSize: 13, fontWeight: 500,
-            }}>
+            <div className="absolute inset-0 flex items-center justify-center text-sm font-medium text-white/85">
               Loading image…
             </div>
           )}
@@ -410,52 +376,47 @@ export default function ImageCropPanel({ file, backgroundSrc, slot, label, onApp
       </div>
 
       {/* Controls */}
-      <div style={{ padding: "20px 40px 32px", borderTop: `1px solid ${COLORS.lightTaupe}` }}>
-        <div style={{ maxWidth: 900, margin: "0 auto" }}>
-          <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-            <button
+      <div className="border-t border-border px-10 pt-5 pb-8">
+        <div className="mx-auto max-w-[900px]">
+          <div className="mb-5 flex gap-2.5">
+            <Button
+              variant="outline"
+              className="flex-1"
               onClick={() => imgEl && setBox(coverBox(imgEl))}
               disabled={!imgEl}
-              style={presetBtnStyle}
             >
               Fill Frame
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
+              className="flex-1"
               onClick={() => imgEl && setBox(containBox(imgEl))}
               disabled={!imgEl}
-              style={presetBtnStyle}
             >
               Fit Whole Image
-            </button>
+            </Button>
           </div>
 
-          <div style={{ display: "flex", gap: 12 }}>
-            <button
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              className="flex-1 border-2 border-brand-warm"
               onClick={onCancel}
-              style={{
-                flex: 1, padding: "14px 20px", borderRadius: 10,
-                border: `2px solid ${COLORS.warmTaupe}`, background: "transparent",
-                color: COLORS.deepTaupe, fontWeight: 600, cursor: "pointer", fontSize: 14,
-              }}
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
+              size="lg"
+              className="flex-2"
               onClick={handleApply}
               disabled={!imgEl || (!!backgroundSrc && !bgImgEl)}
-              style={{ ...PRIMARY_BTN_STYLE(!imgEl || (!!backgroundSrc && !bgImgEl)), flex: 2, padding: "14px 20px" }}
             >
               Apply Changes
-            </button>
+            </Button>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-const presetBtnStyle = {
-  flex: 1, padding: "10px 16px", borderRadius: 8,
-  border: `1.5px solid ${COLORS.lightTaupe}`, background: "#fff",
-  color: COLORS.deepTaupe, fontWeight: 600, fontSize: 12.5, cursor: "pointer",
-};

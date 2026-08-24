@@ -1,36 +1,40 @@
 import React, { useState } from "react";
-import PageLayout   from "./PageLayout";
-import Section      from "./ui/Section";
-import TextField    from "./ui/TextField";
-import SelectField  from "./ui/SelectField";
-import ImageUpload  from "./ui/ImageUpload";
-import ColorSwatchSelect from "./ui/ColorSwatchSelect";
-import ImageCropPanel from "./ImageCropPanel";
-import { downloadFile } from "../utils/downloadFile";
-import { COLORS, PRIMARY_BTN_STYLE } from "../constants/theme";
-import { CITIES } from "../constants/cities";
-import { KITCHEN_FINISH_FIELDS } from "../constants/kitchenFinishColors";
-// import data from "./Data";
+
+import PageLayout from "@/components/PageLayout";
+import ImageCropPanel from "@/components/ImageCropPanel";
+import Section from "@/components/ui/Section";
+import TextField from "@/components/ui/TextField";
+import SelectField from "@/components/ui/SelectField";
+import ImageUpload from "@/components/ui/ImageUpload";
+import ColorSwatchSelect from "@/components/ui/ColorSwatchSelect";
+import FieldGroupLabel from "@/components/ui/FieldGroupLabel";
+import SubmitButton from "@/components/ui/SubmitButton";
+import { apiUrl } from "@/api/config";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
+import { downloadFile } from "@/utils/downloadFile";
+import { CITIES } from "@/constants/cities";
+import { KITCHEN_FINISH_FIELDS } from "@/constants/kitchenFinishColors";
 
 // Place the two background assets you sent (6.jpg / 7.jpg) here, or update
 // these two import paths to wherever they actually live in the project.
 // They must be the SAME files pdfgenerator.py reads from /assets, so the
 // preview matches the real PDF pixel-for-pixel.
-import layoutSlideBg from "../assets/slide-backgrounds/6.jpg";
-import renderSlideBg from "../assets/slide-backgrounds/7.jpg";
+import layoutSlideBg from "@/assets/slide-backgrounds/6.jpg";
+import renderSlideBg from "@/assets/slide-backgrounds/7.jpg";
 
 // Kitchen Finish background varies by how many colors are selected (2-8) —
 // one purpose-designed artwork per swatch count, same naming convention as
 // pdfgenerator.py's assets/Finishes_image_<n>.jpg. Keyed by count so the
 // crop preview always shows the artwork that will actually be used.
-import finishSlideBg2 from "../assets/slide-backgrounds/Finishes_image_2.jpg";
-import finishSlideBg3 from "../assets/slide-backgrounds/Finishes_image_3.jpg";
-import finishSlideBg4 from "../assets/slide-backgrounds/Finishes_image_4.jpg";
-import finishSlideBg5 from "../assets/slide-backgrounds/Finishes_image_5.jpg";
-import finishSlideBg6 from "../assets/slide-backgrounds/Finishes_image_6.jpg";
-import finishSlideBg7 from "../assets/slide-backgrounds/Finishes_image_7.jpg";
-import finishSlideBg8 from "../assets/slide-backgrounds/Finishes_image_8.jpg";
-import { design_data, sales_data } from "./Data";
+import finishSlideBg2 from "@/assets/slide-backgrounds/Finishes_image_2.jpg";
+import finishSlideBg3 from "@/assets/slide-backgrounds/Finishes_image_3.jpg";
+import finishSlideBg4 from "@/assets/slide-backgrounds/Finishes_image_4.jpg";
+import finishSlideBg5 from "@/assets/slide-backgrounds/Finishes_image_5.jpg";
+import finishSlideBg6 from "@/assets/slide-backgrounds/Finishes_image_6.jpg";
+import finishSlideBg7 from "@/assets/slide-backgrounds/Finishes_image_7.jpg";
+import finishSlideBg8 from "@/assets/slide-backgrounds/Finishes_image_8.jpg";
+import { design_data, sales_data } from "@/components/Data";
 
 const FINISH_SLIDE_BG_BY_COUNT = {
   2: finishSlideBg2, 3: finishSlideBg3, 4: finishSlideBg4, 5: finishSlideBg5,
@@ -66,23 +70,24 @@ function RadioCard({ label, checked, onClick }) {
   return (
     <button
       type="button"
+      role="radio"
+      aria-checked={checked}
       onClick={onClick}
-      style={{
-        flex: 1, display: 'flex', alignItems: 'center', gap: 10,
-        padding: '12px 16px', borderRadius: 10,
-        border: `2px solid ${checked ? COLORS.warmTaupe : COLORS.lightTaupe}`,
-        background: checked ? 'rgba(175,124,113,0.08)' : '#fff',
-        cursor: 'pointer', textAlign: 'left',
-      }}
+      className={cn(
+        "flex flex-1 cursor-pointer items-center gap-2.5 rounded-lg border-2 px-4 py-3 text-left transition-colors outline-none",
+        "focus-visible:ring-[3px] focus-visible:ring-ring/40",
+        checked ? "border-brand-warm bg-brand-warm/8" : "border-border bg-white hover:border-brand-warm"
+      )}
     >
-      <span style={{
-        width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
-        border: `2px solid ${checked ? COLORS.warmTaupe : COLORS.lightTaupe}`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        {checked && <span style={{ width: 9, height: 9, borderRadius: '50%', background: COLORS.warmTaupe }} />}
+      <span
+        className={cn(
+          "flex size-4.5 shrink-0 items-center justify-center rounded-full border-2",
+          checked ? "border-brand-warm" : "border-border"
+        )}
+      >
+        {checked && <span className="size-2.25 rounded-full bg-brand-warm" />}
       </span>
-      <span style={{ fontSize: 13.5, fontWeight: 600, color: COLORS.deepTaupe }}>{label}</span>
+      <span className="text-sm font-semibold text-brand-deep">{label}</span>
     </button>
   );
 }
@@ -100,13 +105,7 @@ function ContactPanel({ role, people, nameValue, phoneValue, emailValue, phoneNa
 
   return (
     <div>
-      <p style={{
-        margin: '0 0 12px', fontWeight: 700,
-        color: COLORS.deepTaupe, fontSize: 13,
-        textTransform: 'uppercase', letterSpacing: '0.5px',
-      }}>
-        {label}
-      </p>
+      <FieldGroupLabel>{label}</FieldGroupLabel>
 
       {/* Name dropdown — auto-fills phone & email */}
       <SelectField
@@ -120,90 +119,6 @@ function ContactPanel({ role, people, nameValue, phoneValue, emailValue, phoneNa
 
       <TextField label="Phone" name={phoneName} value={phoneValue} onChange={onChange} placeholder="+91 98765 43210" />
       <TextField label="Email" name={emailName} value={emailValue} onChange={onChange} placeholder={emailPlaceholder} />
-    </div>
-  );
-}
-// function ContactPanel({ role, nameValue, phoneValue, emailValue, phoneName, emailName, onSelect, onChange }) {
-//   const label = role === 'relation' ? 'Relations Associate' : 'Designated Designer';
-//   const emailPlaceholder = role === 'relation' ? 'name@modula.in' : 'designer@modula.in';
-
-//   return (
-//     <div>
-//       <p style={{
-//         margin: '0 0 12px', fontWeight: 700,
-//         color: COLORS.deepTaupe, fontSize: 13,
-//         textTransform: 'uppercase', letterSpacing: '0.5px',
-//       }}>
-//         {label}
-//       </p>
-
-//       {/* Name dropdown — auto-fills phone & email */}
-//       <SelectField
-//         label="Name"
-//         name={`${role}Name`}
-//         value={nameValue}
-//         onChange={(_, val) => onSelect(role, val)}
-//         placeholder="-- Select Name --"
-//         options={data.map(p => ({ value: p.name, label: p.name }))}
-//       />
-
-//       <TextField label="Phone" name={phoneName} value={phoneValue} onChange={onChange} placeholder="+91 98765 43210" />
-//       <TextField label="Email" name={emailName} value={emailValue} onChange={onChange} placeholder={emailPlaceholder} />
-//     </div>
-//   );
-// }
-
-// ─── SubmitButton ────────────────────────────────────────────────
-function SubmitButton({ loading, onClick }) {
-  const SpinnerIcon = () => (
-    <svg className="spinner" style={{ height: 24, width: 24 }} fill="none" viewBox="0 0 24 24">
-      <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path style={{ opacity: 0.75 }} fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-    </svg>
-  );
-
-  const DownloadIcon = () => (
-    <svg style={{ width: 24, height: 24 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5}
-        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-    </svg>
-  );
-
-  return (
-    <button
-      onClick={onClick}
-      disabled={loading}
-      className={loading ? 'upload-shimmer' : ''}
-      style={PRIMARY_BTN_STYLE(loading)}
-      onMouseEnter={e => { if (!loading) { e.currentTarget.style.boxShadow = '0 25px 50px -12px rgba(58,26,26,0.4)'; e.currentTarget.style.transform = 'scale(1.02)'; } }}
-      onMouseLeave={e => { if (!loading) { e.currentTarget.style.boxShadow = '0 20px 25px -5px rgba(58,26,26,0.3)';  e.currentTarget.style.transform = 'scale(1)'; } }}
-      onMouseDown={e  => { if (!loading) e.currentTarget.style.transform = 'scale(0.98)'; }}
-      onMouseUp={e    => { if (!loading) e.currentTarget.style.transform = 'scale(1.02)'; }}
-    >
-      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-        {loading ? <><SpinnerIcon /> Generating PDF… (5–10 seconds)</> : <><DownloadIcon /> Generate PDF</>}
-      </span>
-    </button>
-  );
-}
-
-// ─── ErrorBanner ─────────────────────────────────────────────────
-function ErrorBanner({ message }) {
-  if (!message) return null;
-  return (
-    <div className="error-shake" style={{
-      marginBottom: 24, padding: 20, borderRadius: 12,
-      background: COLORS.blush, border: `2px solid ${COLORS.warmTaupe}`,
-    }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-        <svg style={{ width: 24, height: 24, color: '#dc2626', flexShrink: 0, marginTop: 2 }}
-          fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5}
-            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <p style={{ color: '#991b1b', fontWeight: 500, margin: 0 }}>{message}</p>
-      </div>
     </div>
   );
 }
@@ -307,16 +222,6 @@ export default function KitchenPDFForm() {
       [`${prefix}Email`]: (person?.email_id   ?? '').trim(),
     }));
   };
-  // const handleContactSelect = (role, selectedName) => {
-  //   const person = data.find(p => p.name === selectedName);
-  //   const prefix = role === 'relation' ? 'relation' : 'designer';
-  //   setFields(prev => ({
-  //     ...prev,
-  //     [`${prefix}Name`]:  selectedName,
-  //     [`${prefix}Phone`]: person?.phone_name ?? '',
-  //     [`${prefix}Email`]: person?.email_id   ?? '',
-  //   }));
-  // };
 
   // Opens the crop panel for a raw file instead of storing it directly.
   // `applyFn` is called with the final cropped File once the user confirms.
@@ -469,7 +374,7 @@ export default function KitchenPDFForm() {
         fd.append('kitchenFinishColorNames', JSON.stringify(selectedNames));
       }
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/generate-pdf`, { method: 'POST', body: fd });
+      const res = await fetch(apiUrl('/generate-pdf'), { method: 'POST', body: fd });
       if (!res.ok) throw new Error(await res.text());
 
       const blobUrl = URL.createObjectURL(await res.blob());
@@ -489,26 +394,20 @@ export default function KitchenPDFForm() {
     <>
       {/* Client Details */}
       <Section title="Client Details">
-        <div style={{ display: 'flex', gap: 16 }}>
-          <div style={{ flex: 1 }}>
-            <SelectField label="Title *" name="title" value={fields.title} onChange={set}
-              placeholder="Title" options={[{ value: 'MR.', label: 'MR.' }, { value: 'MRS.', label: 'MRS.' }]} />
-          </div>
-          <div style={{ flex: 2 }}>
-            <TextField label="Customer Name *" name="customerName" value={fields.customerName}
-              onChange={set} placeholder="JOHN DOE" />
-          </div>
-          <div style={{ flex: 1.5 }}>
-            <SelectField label="City *" name="city" value={fields.city} onChange={set}
-              placeholder="Select City" options={CITIES} />
-          </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_2fr_1.5fr]">
+          <SelectField label="Title *" name="title" value={fields.title} onChange={set}
+            placeholder="Title" options={[{ value: 'MR.', label: 'MR.' }, { value: 'MRS.', label: 'MRS.' }]} />
+          <TextField label="Customer Name *" name="customerName" value={fields.customerName}
+            onChange={set} placeholder="JOHN DOE" />
+          <SelectField label="City *" name="city" value={fields.city} onChange={set}
+            placeholder="Select City" options={CITIES} />
         </div>
       </Section>
 
       {/* Layout Plan */}
       <Section title="Layout Plan">
         
-        <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
+        <div role="radiogroup" aria-label="Number of layout plan images" className="mb-5 flex gap-3">
           <RadioCard
             label="1 Image (Full Width)"
             checked={layoutCount === 1}
@@ -544,24 +443,10 @@ export default function KitchenPDFForm() {
       {/* Renders — Kitchen Finish first, followed by 4 render uploads */}
       <Section title="Renders">
         {/* Kitchen Finish is mandatory and shown before render uploads. */}
-        <div style={{
-          marginBottom: 24, paddingBottom: 20,
-          borderBottom: `1px dashed ${COLORS.lightTaupe}`,
-        }}>
-          <p style={{
-            margin: '0 0 4px', fontWeight: 700, color: COLORS.deepTaupe,
-            fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.4px',
-          }}>
-            Kitchen Finish *
-          </p>
-          {/* <p style={{ margin: '0 0 14px', fontSize: 12.5, color: COLORS.mutedBrown }}>
-            Upload a reference image to add a "Kitchen Color Finishes Used" slide.
-            Once uploaded, pick between {MIN_FINISH_COLORS} and {MAX_FINISH_COLORS} finish colors —
-            you don't need to fill in every category.
-          </p> */}
+        <div className="mb-6 border-b border-dashed border-border pb-5">
+          <FieldGroupLabel className="mb-1">Kitchen Finish *</FieldGroupLabel>
 
           <ImageUpload
-            // label="Kitchen Finish Reference Image"
             name="kitchenFinishImage"
             onChange={handleKitchenFinishImageSelect}
             display={imageDisplay['kitchenFinishImage']}
@@ -569,15 +454,15 @@ export default function KitchenPDFForm() {
 
           {fields.kitchenFinishImage && (
             <>
-              <p style={{
-                margin: '4px 0 14px', fontSize: 12.5, fontWeight: 600,
-                color: selectedFinishCount < MIN_FINISH_COLORS ? '#b45309' : COLORS.mutedBrown,
-              }}>
+              <p className={cn(
+                "mt-1 mb-3.5 text-sm font-semibold",
+                selectedFinishCount < MIN_FINISH_COLORS ? "text-warning" : "text-brand-muted"
+              )}>
                 {selectedFinishCount} of {MAX_FINISH_COLORS} colors selected
                 {selectedFinishCount < MIN_FINISH_COLORS ? ` — pick at least ${MIN_FINISH_COLORS}` : ''}
               </p>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {KITCHEN_FINISH_FIELDS.map(f => (
                   <ColorSwatchSelect
                     key={f.key}
@@ -593,12 +478,7 @@ export default function KitchenPDFForm() {
           )}
         </div>
 
-        <p style={{
-          margin: '0 0 14px', fontWeight: 700, color: COLORS.deepTaupe,
-          fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.4px',
-        }}>
-          Upload Renders * (at least 1, up to 4)
-        </p>
+        <FieldGroupLabel className="mb-3.5">Upload Renders * (at least 1, up to 4)</FieldGroupLabel>
 
         {[0, 1, 2, 3].map(i => (
           <ImageUpload
@@ -613,27 +493,7 @@ export default function KitchenPDFForm() {
 
       {/* Contact Details */}
       <Section title="Contact Details">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-          {/* <ContactPanel
-            role="relation"
-            nameValue={fields.relationName}
-            phoneValue={fields.relationPhone}
-            emailValue={fields.relationEmail}
-            phoneName="relationPhone"
-            emailName="relationEmail"
-            onSelect={handleContactSelect}
-            onChange={set}
-          />
-          <ContactPanel
-            role="designer"
-            nameValue={fields.designerName}
-            phoneValue={fields.designerPhone}
-            emailValue={fields.designerEmail}
-            phoneName="designerPhone"
-            emailName="designerEmail"
-            onSelect={handleContactSelect}
-            onChange={set}
-          /> */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 
           <ContactPanel
             role="relation"
@@ -660,8 +520,18 @@ export default function KitchenPDFForm() {
         </div>
       </Section>
 
-      <ErrorBanner message={error} />
-      <SubmitButton loading={loading} onClick={handleGenerate} />
+      {error && (
+        <Alert variant="destructive" className="mb-6 animate-shake">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      <SubmitButton
+        loading={loading}
+        onClick={handleGenerate}
+        idleLabel="Generate PDF"
+        loadingLabel="Generating PDF… (5–10 seconds)"
+      />
     </>
   );
 
@@ -670,17 +540,11 @@ export default function KitchenPDFForm() {
   // genuinely fill the viewport instead of being squeezed into it.
   if (cropSession) {
     return (
-      <div style={{
-        position: 'fixed', inset: 0, zIndex: 2000,
-        display: 'flex', background: '#fff',
-      }}>
-        <div style={{
-          flex: 1, minWidth: 0, overflowY: 'auto',
-          padding: 40, borderRight: `1px solid ${COLORS.lightTaupe}`,
-        }}>
+      <div className="fixed inset-0 z-[2000] flex bg-white">
+        <div className="min-w-0 flex-1 overflow-y-auto border-r border-border p-10">
           {formBody}
         </div>
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+        <div className="flex min-w-0 flex-1 flex-col">
           <ImageCropPanel
             file={cropSession.file}
             label={cropSession.label}
@@ -696,9 +560,7 @@ export default function KitchenPDFForm() {
 
   return (
     <PageLayout>
-      <div style={{ padding: 40 }}>
-        {formBody}
-      </div>
+      <div className="p-10">{formBody}</div>
     </PageLayout>
   );
 }

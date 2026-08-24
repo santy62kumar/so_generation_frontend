@@ -1,9 +1,9 @@
 // src/api/dbAdminApi.js
 //
 // Thin fetch wrapper for the Database Manager UI.
-// Adjust API_BASE to match however the rest of the app points at your backend.
+// The backend origin comes from ./config (VITE_API_URL).
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+import { API_BASE } from "./config";
 
 const TOKEN_KEY = "modula_admin_token";
 
@@ -41,7 +41,7 @@ async function authedFetch(path, options = {}) {
     try {
       const body = await res.json();
       detail = body.detail || detail;
-    } catch (_) {
+    } catch {
       /* ignore */
     }
     throw new Error(detail);
@@ -63,7 +63,7 @@ export async function login(username, password) {
     try {
       const body = await res.json();
       detail = body.detail || detail;
-    } catch (_) {
+    } catch {
       /* ignore */
     }
     throw new Error(detail);

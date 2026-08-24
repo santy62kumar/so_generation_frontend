@@ -1,3 +1,160 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Nunito+Sans:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* ============================================================================
+   Design tokens — the single source of truth for the Modula SO Generator UI.
+
+   Every colour below is lifted verbatim from the original constants/theme.js
+   brand palette and the status colours already in use across the app. Nothing
+   here shifts a hue; the tokens only give the existing colours one name each.
+   ========================================================================= */
+
+@theme {
+  /* ── Brand palette (was COLORS in constants/theme.js) ─────────────────── */
+  --color-brand-dark:   #3A1A1A;  /* darkBrown  */
+  --color-brand-med:    #6B4B41;  /* medBrown   */
+  --color-brand-muted:  #9B7C73;  /* mutedBrown */
+  --color-brand-deep:   #4F372F;  /* deepTaupe  */
+  --color-brand-warm:   #AF7C71;  /* warmTaupe  */
+  --color-brand-light:  #D7C5AA;  /* lightTaupe */
+  --color-brand-blush:  #F1E6DD;  /* blush      */
+  --color-brand-cream:  #FFFBF8;  /* cream      */
+  --color-brand-slate:  #706362;  /* inactive nav pill */
+  --color-brand-gold:   #D4A96A;  /* info-note accent */
+  --color-brand-canvas: #FAF7F2;  /* crop-editor ground */
+
+  /* ── Status palette (previously scattered as hex literals) ────────────── */
+  --color-danger:         #B3413A;
+  --color-danger-strong:  #991B1B;
+  --color-danger-accent:  #DC2626;
+  --color-danger-soft:    #EF4444;
+  --color-danger-surface: #FEE2E2;
+  --color-success:         #16A34A;
+  --color-success-strong:  #15803D;
+  --color-success-surface: #F0FDF4;
+  --color-success-border:  #86EFAC;
+  --color-warning:         #B45309;
+
+  /* ── shadcn semantic tokens, mapped onto the brand palette ────────────── */
+  --color-background:            var(--color-brand-cream);
+  --color-foreground:            var(--color-brand-dark);
+  --color-card:                  var(--color-brand-cream);
+  --color-card-foreground:       var(--color-brand-dark);
+  --color-popover:               var(--color-brand-cream);
+  --color-popover-foreground:    var(--color-brand-dark);
+  --color-primary:               var(--color-brand-dark);
+  --color-primary-foreground:    #FFFFFF;
+  --color-secondary:             var(--color-brand-blush);
+  --color-secondary-foreground:  var(--color-brand-deep);
+  --color-muted:                 var(--color-brand-blush);
+  --color-muted-foreground:      var(--color-brand-muted);
+  --color-accent:                var(--color-brand-light);
+  --color-accent-foreground:     var(--color-brand-dark);
+  --color-destructive:           var(--color-danger);
+  --color-destructive-foreground:#FFFFFF;
+  --color-border:                var(--color-brand-light);
+  --color-input:                 var(--color-brand-light);
+  --color-ring:                  var(--color-brand-med);
+
+  /* ── Type scale — 15 ad-hoc sizes collapsed to 8 named steps.
+        Values chosen to match the sizes already dominant in the app, so the
+        rename is lossless: text-sm is the 13px form label, text-base the
+        14px input, text-xl the 18px primary button. ─────────────────────── */
+  --text-xs:    11px;   --text-xs--line-height:   1.45;
+  --text-sm:    13px;   --text-sm--line-height:   1.45;
+  --text-base:  14px;   --text-base--line-height: 1.5;
+  --text-lg:    16px;   --text-lg--line-height:   1.5;
+  --text-xl:    18px;   --text-xl--line-height:   1.4;
+  --text-2xl:   22px;   --text-2xl--line-height:  1.3;
+  --text-3xl:   28px;   --text-3xl--line-height:  1.2;
+  --text-4xl:   42px;   --text-4xl--line-height:  1.1;
+
+  /* ── Radius — 11 ad-hoc values collapsed to 5 steps ───────────────────── */
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:  10px;   /* the app's dominant field/button radius */
+  --radius-xl:  16px;   /* section + primary-button radius */
+  --radius-2xl: 24px;   /* page card */
+
+  /* ── Elevation — one ramp instead of a dozen one-off shadows ──────────── */
+  --shadow-nav:       0 2px 12px rgba(58, 26, 26, 0.10);
+  --shadow-pill:      0 4px 12px rgba(58, 26, 26, 0.30);
+  --shadow-raised:    0 20px 25px -5px rgba(58, 26, 26, 0.30);
+  --shadow-card:      0 25px 50px -12px rgba(58, 26, 26, 0.25);
+  --shadow-lifted:    0 25px 50px -12px rgba(58, 26, 26, 0.40);
+
+  /* ── Typography families ──────────────────────────────────────────────── */
+  --font-sans:    'Montserrat', 'Nunito Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+
+  /* ── Motion (shared keyframes, previously in styles/global.css) ───────── */
+  --animate-float:   float 3s ease-in-out infinite;
+  --animate-shake:   shake 0.5s ease-in-out;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-slide-in: slide-in 0.4s ease-out;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -100% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25%      { transform: translateX(-10px); }
+    75%      { transform: translateX(10px); }
+  }
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/40;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* The page gradient every screen shares. */
+  .app-surface {
+    background: linear-gradient(
+      135deg,
+      var(--color-brand-cream) 0%,
+      var(--color-brand-blush) 50%,
+      var(--color-brand-light) 100%
+    );
+  }
+
+  /* Frosted-glass panel used by the page card and the navbar. */
+  .app-glass {
+    background: color-mix(in srgb, var(--color-brand-cream) 90%, transparent);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Hairline grid texture on the main page card. */
+  .app-grain {
+    background-image:
+      repeating-linear-gradient(0deg,  rgba(255,255,255,0.03), rgba(255,255,255,0.03) 1px, transparent 1px, transparent 2px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.03) 1px, transparent 1px, transparent 2px);
+  }
+
+  /* Loading sheen on a busy submit button. */
+  .upload-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255,255,255,0.30) 0%,
+      rgba(255,255,255,0.80) 50%,
+      rgba(255,255,255,0.30) 100%
+    ) !important;
+    background-size: 200% 100% !important;
+    animation: var(--animate-shimmer) !important;
+  }
+}

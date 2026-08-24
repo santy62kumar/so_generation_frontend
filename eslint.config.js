@@ -23,7 +23,19 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // Components referenced only in JSX look "unused" without
+      // eslint-plugin-react, so ignore capitalised names (and _ throwaways).
+      'no-unused-vars': ['error', {
+        varsIgnorePattern: '^[A-Z_]',
+        argsIgnorePattern: '^[A-Z_]',
+      }],
     },
+  },
+  {
+    // shadcn primitives ship their cva variant maps alongside the component;
+    // that is the upstream shape, and regenerating a component would undo any
+    // local split. Fast-refresh granularity is not worth fighting it for.
+    files: ['src/components/ui/**/*.jsx'],
+    rules: { 'react-refresh/only-export-components': 'off' },
   },
 ])

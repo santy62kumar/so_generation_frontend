@@ -1,16 +1,30 @@
-# React + Vite
+# SO Generator — frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite UI for the SO Generator backend: design-draft PDF, warranty handbook,
+daily installation report, XLSX → order-lines conversion, and the Database
+Manager.
 
-Currently, two official plugins are available:
+## Run it
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+npm install
+cp .env.example .env      # then check VITE_API_URL
+npm run dev
+```
 
-## React Compiler
+## Environment
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+One variable. Vite only exposes names prefixed with `VITE_`, and it reads
+`.env` **at startup** — restart the dev server after editing it.
 
-## Expanding the ESLint configuration
+| Variable | Default if unset | Purpose |
+|---|---|---|
+| `VITE_API_URL` | `http://localhost:8000` | Origin of the FastAPI backend, no trailing slash |
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Read it through `src/api/config.js` (`API_BASE`, `apiUrl()`), never
+`import.meta.env.VITE_API_URL` directly — the direct form silently produced
+`POST /undefined/generate-pdf` whenever `.env` was missing.
+
+Whatever origin the dev server ends up on has to be listed in the backend's
+`ALLOWED_ORIGINS`. Vite moves to 5174, 5175, … when 5173 is taken, and the only
+symptom of a missing origin is a CORS error in the browser console.
