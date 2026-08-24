@@ -1,172 +1,49 @@
-// import React from "react";
-
-// const TABS = [
-//   { key: "kitchen",  label: "Design Draft"  },
-//   { key: "xlsx",     label: "SO Generator"  },
-//   { key: "warranty", label: "Warranty Card" },
-// ];
-
-// const Navbar = ({ activeView, onNavigate }) => (
-//   <nav style={{
-//     position: "fixed",
-//     top: 0, left: 0, right: 0,
-//     zIndex: 50,
-//     background: "rgba(255, 251, 248, 0.6)",
-//     backdropFilter: "blur(12px)",
-//     WebkitBackdropFilter: "blur(12px)",
-//     boxShadow: "0 2px 12px rgba(58,26,26,0.1)",
-//     borderBottom: "1px solid rgba(215,197,170,0.4)",
-//   }}>
-//     <div style={{
-//       maxWidth: 1440,
-//       margin: "0 auto",
-//       padding: "0 24px",
-//       height: 64,
-//       display: "flex",
-//       alignItems: "center",
-//       justifyContent: "space-between",
-//     }}>
-
-//       {/* ── Logo — always navigates home ─────────────────────────── */}
-//       <button
-//         onClick={() => onNavigate("home")}
-//         style={{
-//           background: "none", border: "none", padding: 0,
-//           cursor: "pointer", display: "flex", alignItems: "center",
-//         }}
-//       >
-//         <img
-//           src="https://www.modula.in/images/modula_jsw.svg"
-//           alt="Modula by JSW"
-//           style={{ height: 40, width: "auto" }}
-//         />
-//       </button>
-
-//       {/* ── Tab buttons ──────────────────────────────────────────── */}
-//       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-//         {TABS.map(tab => {
-//           const isActive = activeView === tab.key;
-//           return (
-//             <button
-//               key={tab.key}
-//               onClick={() => onNavigate(tab.key)}
-//               style={{
-//                 fontFamily: "Montserrat, sans-serif",
-//                 fontSize: 14,
-//                 fontWeight: 700,
-//                 lineHeight: "18px",
-//                 padding: "8px 20px",
-//                 borderRadius: 30,
-//                 border: "none",
-//                 cursor: "pointer",
-//                 transition: "background 0.2s ease",
-//                 background: isActive
-//                   ? "linear-gradient(90deg, #3A1A1A 0%, #6B4B41 100%)"
-//                   : "#706362",
-//                 color: "white",
-//                 boxShadow: isActive ? "0 4px 12px rgba(58,26,26,0.3)" : "none",
-//               }}
-//               onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "#2b1514"; }}
-//               onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "#706362"; }}
-//             >
-//               {tab.label}
-//             </button>
-//           );
-//         })}
-//       </div>
-
-//     </div>
-//   </nav>
-// );
-
-// export default Navbar;
-
 import React from "react";
 
-// const TABS = [
-//   { key: "kitchen",      label: "Design Draft"          },
-//   { key: "xlsx",         label: "SO Generator"          },
-//   { key: "warranty",     label: "Warranty Card"         },
-//   { key: "installation", label: "Installation Report"   },  // ← NEW
-// ];
+import { Button } from "@/components/ui/button";
 
 const TABS = [
   { key: "kitchen",      label: "Design Draft"        },
   { key: "xlsx",         label: "SO Generator"        },
-  { key: "warranty",     label: "Warranty Card"       },
+  { key: "warranty",     label: "Warranty Handbook"   },
   { key: "installation", label: "Installation Report" },
-  { key: "database",     label: "Database Manager"    },  // ← NEW
+  { key: "database",     label: "Database Manager"    },
 ];
 
 const Navbar = ({ activeView, onNavigate }) => (
-  <nav style={{
-    position: "fixed",
-    top: 0, left: 0, right: 0,
-    zIndex: 50,
-    background: "rgba(255, 251, 248, 0.6)",
-    backdropFilter: "blur(12px)",
-    WebkitBackdropFilter: "blur(12px)",
-    boxShadow: "0 2px 12px rgba(58,26,26,0.1)",
-    borderBottom: "1px solid rgba(215,197,170,0.4)",
-  }}>
-    <div style={{
-      maxWidth: 1440,
-      margin: "0 auto",
-      padding: "0 24px",
-      height: 64,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-    }}>
-
-      {/* ── Logo — always navigates home ─────────────────────────── */}
+  <nav className="app-glass fixed inset-x-0 top-0 z-50 border-b border-border/40 shadow-nav">
+    <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-6 px-6">
+      {/* Logo — always navigates home */}
       <button
+        type="button"
         onClick={() => onNavigate("home")}
-        style={{
-          background: "none", border: "none", padding: 0,
-          cursor: "pointer", display: "flex", alignItems: "center",
-        }}
+        aria-label="Modula by JSW — go to home"
+        className="flex shrink-0 items-center rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
       >
         <img
           src="https://www.modula.in/images/modula_jsw.svg"
           alt="Modula by JSW"
-          style={{ height: 40, width: "auto" }}
+          className="h-10 w-auto"
         />
       </button>
 
-      {/* ── Tab buttons ──────────────────────────────────────────── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        {TABS.map(tab => {
+      <div className="flex items-center gap-2.5 overflow-x-auto">
+        {TABS.map((tab) => {
           const isActive = activeView === tab.key;
           return (
-            <button
+            <Button
               key={tab.key}
+              variant={isActive ? "default" : "slate"}
+              size="sm"
+              aria-current={isActive ? "page" : undefined}
+              className={isActive ? "shadow-pill" : "shadow-none"}
               onClick={() => onNavigate(tab.key)}
-              style={{
-                fontFamily: "Montserrat, sans-serif",
-                fontSize: 14,
-                fontWeight: 700,
-                lineHeight: "18px",
-                padding: "8px 20px",
-                borderRadius: 30,
-                border: "none",
-                cursor: "pointer",
-                transition: "background 0.2s ease",
-                background: isActive
-                  ? "linear-gradient(90deg, #3A1A1A 0%, #6B4B41 100%)"
-                  : "#706362",
-                color: "white",
-                boxShadow: isActive ? "0 4px 12px rgba(58,26,26,0.3)" : "none",
-              }}
-              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "#2b1514"; }}
-              onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "#706362"; }}
             >
               {tab.label}
-            </button>
+            </Button>
           );
         })}
       </div>
-
     </div>
   </nav>
 );

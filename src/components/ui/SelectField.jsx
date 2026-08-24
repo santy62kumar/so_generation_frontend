@@ -1,52 +1,68 @@
-import React from "react";
-import { FIELD_LABEL_STYLE, COLORS } from "../../constants/theme";
+import React, { useId } from "react";
+import { ChevronDown } from "lucide-react";
 
-const CHEVRON_SVG = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%236B4B41' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`;
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 /**
- * Labelled styled <select>.
+ * Labelled dropdown.
+ *
+ * Stays on the native <select> on purpose: it is keyboard- and
+ * screen-reader-correct for free and gives mobile users the OS picker. The
+ * chrome around it is the same token set as <Input>, so it reads as one
+ * family with the text fields.
  *
  * Props:
  *  - label, name, value, onChange(name, value), placeholder
  *  - options  Array of strings  OR  Array of { value, label }
  */
-const SelectField = ({ label, name, value, onChange, options = [], placeholder }) => (
-  <div style={{ marginBottom: 12 }}>
-    <label style={FIELD_LABEL_STYLE}>{label}</label>
-    <select
-      name={name}
-      value={value}
-      onChange={e => onChange(name, e.target.value)}
-      style={{
-        width: '100%',
-        padding: '10px 14px',
-        paddingRight: 36,
-        border: `1.5px solid ${COLORS.lightTaupe}`,
-        borderRadius: 10,
-        fontFamily: 'Montserrat, Nunito Sans, sans-serif',
-        fontSize: 14,
-        color: value ? COLORS.darkBrown : COLORS.mutedBrown,
-        background: 'rgba(255,251,248,0.8)',
-        outline: 'none',
-        boxSizing: 'border-box',
-        cursor: 'pointer',
-        transition: 'border-color 0.2s ease',
-        appearance: 'none',
-        backgroundImage: CHEVRON_SVG,
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'right 12px center',
-      }}
-      onFocus={e => (e.target.style.borderColor = COLORS.medBrown)}
-      onBlur={e  => (e.target.style.borderColor = COLORS.lightTaupe)}
-    >
-      <option value="">{placeholder}</option>
-      {options.map(opt => (
-        <option key={opt.value ?? opt} value={opt.value ?? opt}>
-          {opt.label ?? opt}
-        </option>
-      ))}
-    </select>
-  </div>
-);
+const SelectField = ({
+  label,
+  name,
+  value,
+  onChange,
+  options = [],
+  placeholder,
+  error,
+  className,
+  ...props
+}) => {
+  const id = useId();
+
+  return (
+    <div className={cn("mb-3 space-y-1.5", className)}>
+      {label && <Label htmlFor={id}>{label}</Label>}
+      <div className="relative">
+        <select
+          id={id}
+          name={name}
+          value={value}
+          aria-invalid={error ? true : undefined}
+          onChange={(e) => onChange(name, e.target.value)}
+          className={cn(
+            "w-full appearance-none rounded-lg border-[1.5px] border-input bg-brand-cream/80 py-2.5 pr-10 pl-3.5 text-base transition-colors outline-none",
+            "cursor-pointer focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/20",
+            "disabled:cursor-not-allowed disabled:opacity-60",
+            "aria-invalid:border-destructive aria-invalid:ring-destructive/20",
+            value ? "text-foreground" : "text-brand-muted"
+          )}
+          {...props}
+        >
+          <option value="">{placeholder}</option>
+          {options.map((opt) => (
+            <option key={opt.value ?? opt} value={opt.value ?? opt} className="text-foreground">
+              {opt.label ?? opt}
+            </option>
+          ))}
+        </select>
+        <ChevronDown
+          aria-hidden="true"
+          className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-brand-med"
+        />
+      </div>
+      {error && <p className="text-xs text-danger-strong">{error}</p>}
+    </div>
+  );
+};
 
 export default SelectField;
